@@ -29,3 +29,4 @@ coverage
 
 # TMP
 /_cktp
+/test/*.json
