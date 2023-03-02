@@ -47,3 +47,11 @@ npm run build
 ```sh
 npm run lint
 ```
+
+# LICENSE
+
+SPDX-License-Identifier: Unicode-DFS-2016
+
+Copyright &copy; 2023 Code Hive Tx, LLC
+
+Distributed under the Unicode terms of use, see [LICENSE](./LICENSE)

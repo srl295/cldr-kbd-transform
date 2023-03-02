@@ -2,6 +2,12 @@
   "name": "@codehivetx/cldr-kbd-transform",
   "version": "0.0.0",
   "private": true,
+  "license": "Unicode-DFS-2016",
+  "author": {
+    "name": "Steven R. Loomis",
+    "email": "srl295@gmail.com",
+    "url": "https://srl295.github.io"
+  },
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check build-only",
