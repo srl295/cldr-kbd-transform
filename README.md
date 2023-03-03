@@ -5,6 +5,8 @@ Playground for CLDR Keyboard Transform proposal.
 - [proposal](https://docs.google.com/document/d/1FoV37ymU3VR0bI_V8H4cnN0Q5gkorTJa2hWHpw3NT6w/edit#)
 - [Keyboard WG](https://cldr.unicode.org/index/keyboard-workgroup)
 
+[![Run Tests](https://github.com/srl295/cldr-kbd-transform/actions/workflows/node.yml/badge.svg)](https://github.com/srl295/cldr-kbd-transform/actions/workflows/node.yml)
+]
 ## Recommended IDE Setup
 
 [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
