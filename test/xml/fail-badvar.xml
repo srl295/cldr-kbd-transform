@@ -1,0 +1,10 @@
+<keyboard>
+    <variables>
+        <variable id="quot" value="\\u{0022}" />
+    </variables>
+    <transforms type="simple">
+        <transformGroup>
+            <transform from="\\\${DOES_NOT_EXIST}" to="≈≈" />
+        </transformGroup>
+    </transforms>
+</keyboard>

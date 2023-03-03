@@ -59,7 +59,6 @@ function processGroup(xml: any, group: { transform: any; }, source: string) {
 
 function process(xml: { keyboard: { transforms: { transformGroup: any; }[]; }; }, source: string) {
     let str = source;
-    if (!source) return source; /* quick exit on empty */
     for (const group of xml.keyboard.transforms[0].transformGroup) {
         str = processGroup(xml, group, str);
     }
@@ -99,7 +98,6 @@ export function processTransform(xml: string, source: string) {
         isArray,
     });
     const j = parser.parse(xml);
-
     const target = process(j, source);
     return target;
 }

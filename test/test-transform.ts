@@ -1,14 +1,20 @@
 import assert from 'node:assert';
 import test from 'node:test';
-import fs from 'node:fs';
 import { processTransform } from '../src/lib/transform.js';
 
-const sample0 = fs.readFileSync('./test/sample0.xml', 'utf-8');
+import { readXml } from './util.js';
+
 
 test('basic test', (t) => {
   const inTxt = 'Quack: a big happy string';
-  const outTxt = processTransform(sample0, inTxt);
+  const outTxt = processTransform(readXml('sample0'), inTxt);
   assert.strictEqual(outTxt, `\\\\\\"ubck: b big hbppy string`);
+});
+
+
+test('failing tests', (t) => {
+  const inTxt = '≈';
+  assert.doesNotThrow(() => processTransform(readXml('fail-badvar'), inTxt));
 });
 
 // test('synchronous passing test', (t) => {
