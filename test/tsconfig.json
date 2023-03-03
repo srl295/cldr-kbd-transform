@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "noEmit": false,
+    "esModuleInterop": true
+  },
+  "include": ["./**/*"],
+}

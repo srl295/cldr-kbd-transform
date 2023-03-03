@@ -1,0 +1,22 @@
+<!-- sample XML -->
+<keyboard>
+    <variables>
+        <variable id="left_matras" value="[X]" />
+        <variable id="consonants" value="[ABCD]" />
+        <variable id="zwnj" value="\\u{200C}" />
+        <variable id="quot" value="\\u{0022}" />
+    </variables>
+    <transforms type="simple">
+        <transformGroup>
+            <transform from="a" to="b" />
+            <transform from="c" to="d" />
+        </transformGroup>
+        <transformGroup>
+            <transform from="q" to="\\u{0022}" /> <!-- quote -->
+            <transform from="Q" to="\\\${quot}" />
+        </transformGroup>
+        <transformGroup>
+            <transform from="\\\${zwnj}(\\\${left_matras})(\\\${consonants})" to="$2$1" />
+        </transformGroup>
+    </transforms>
+</keyboard>

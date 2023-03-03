@@ -29,4 +29,5 @@ coverage
 
 # TMP
 /_cktp
-/test/*.json
+/test/*.js
+/src/**/*.js
