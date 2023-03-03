@@ -1,6 +1,6 @@
 import assert from 'node:assert';
 import test from 'node:test';
-import { processTransform } from '../src/lib/transform.js';
+import { processTransform, unescapeStr } from '../src/lib/transform.js';
 
 import { readXml } from './util.js';
 
@@ -15,6 +15,13 @@ test('basic test', (t) => {
 test('failing tests', (t) => {
   const inTxt = '≈';
   assert.doesNotThrow(() => processTransform(readXml('fail-badvar'), inTxt));
+});
+
+test('utilities', (t) => {
+  t.test('unescapeStr', (t) => {
+    assert.equal(unescapeStr(`\u{22}295=\u{0127}\u{22}`), `"295=ħ"`);
+    assert.equal(unescapeStr(`≈`), `≈`);
+  });
 });
 
 // test('synchronous passing test', (t) => {
