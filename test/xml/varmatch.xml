@@ -1,0 +1,17 @@
+<!-- sample XML -->
+<keyboard>
+    <variables>
+        <variable id="x" value="x" />>
+        <variable id="y" value="y" />
+        <variable id="upper" value="[ABCDE]" />
+        <variable id="lower" value="[abcde]" />
+    </variables>
+    <transforms type="simple">
+        <transformGroup>
+            <transform from="\${x}" to="\${y}" />
+        </transformGroup>
+        <transformGroup>
+            <transform from="(\${upper})" to="${1:lower}" />
+        </transformGroup>
+    </transforms>
+</keyboard>
