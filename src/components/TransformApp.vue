@@ -54,7 +54,7 @@ h3 {
 
 <script lang="ts">
 
-import processTransform from '@/lib/transform';
+import { processTransform } from '@/lib/transform';
 
 const sampleXml = `
 <!-- sample XML -->
@@ -86,7 +86,7 @@ export default {
     return {
       xml: sampleXml,
       source: 'Quack: a big happy string',
-      target: null,
+      target: '',
       status: 'Ready',
     };
   },

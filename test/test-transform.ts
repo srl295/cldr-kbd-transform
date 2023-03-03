@@ -1,7 +1,7 @@
 import assert from 'node:assert';
 import test from 'node:test';
 import fs from 'node:fs';
-import processTransform from '../src/lib/transform.js';
+import { processTransform } from '../src/lib/transform.js';
 
 const sample0 = fs.readFileSync('./test/sample0.xml', 'utf-8');
 

@@ -4,12 +4,12 @@
 
 import { XMLParser } from "fast-xml-parser";
 
-function unescapeStr(str) {
-    str = str.replaceAll(/\\u{([0-9a-f]+)}/g, (a, b) => String.fromCodePoint(Number.parseInt(b, 16)));
+function unescapeStr(str : string) : string {
+    str = str.replace(/\\u{([0-9a-f]+)}/g, (a: any, b: string) => String.fromCodePoint(Number.parseInt(b, 16)));
     return str;
 }
 
-function replaceOneVar(xml, vname) {
+function replaceOneVar(xml : any, vname : string) {
     for (const v of xml.keyboard.variables.variable) {
         const id = v['@_id'];
         if (id === vname) {
@@ -21,13 +21,13 @@ function replaceOneVar(xml, vname) {
     return "";
 }
 
-function replaceVar(xml, str) {
-    str = str.replaceAll(/\\\${([0-9a-zA-Z_]+)}/g, (a, b) => replaceOneVar(xml, b));
+function replaceVar(xml : any, str : string) {
+    str = str.replace(/\\\${([0-9a-zA-Z_]+)}/g, (a : any, b : string) => replaceOneVar(xml, b));
     return str;
 
 }
 
-function unescapeMatch(xml, str) {
+function unescapeMatch(xml : string, str : string) {
     // unescape
     str = unescapeStr(str);
     // match vars
@@ -35,17 +35,17 @@ function unescapeMatch(xml, str) {
     return str;
 }
 
-function applyMatch(xml, re, transform, source) {
+function applyMatch(xml: string, re: RegExp, transform: any, source: any) {
     const toString = unescapeMatch(xml, transform['@_to']);
     return source.replaceAll(re, toString);
 }
 
-function getRegex(xml, transform) {
+function getRegex(xml: any, transform: { [x: string]: string | RegExp; }) {
     return new RegExp(transform['@_from'], 'g');
 }
 
-function processGroup(xml, group, source) {
-    for (let transform of group.transform) {
+function processGroup(xml: any, group: { transform: any; }, source: string) {
+    for (const transform of group.transform) {
         const re = getRegex(xml, transform);
         if (source.match(re)) {
             console.dir({ matched: transform });
@@ -57,10 +57,10 @@ function processGroup(xml, group, source) {
     return source;
 }
 
-function process(xml, source) {
+function process(xml: { keyboard: { transforms: { transformGroup: any; }[]; }; }, source: string) {
     let str = source;
     if (!source) return source; /* quick exit on empty */
-    for (let group of xml.keyboard.transforms[0].transformGroup) {
+    for (const group of xml.keyboard.transforms[0].transformGroup) {
         str = processGroup(xml, group, str);
     }
     return str;
@@ -93,7 +93,7 @@ const isArray = (name: string, jpath: string, isLeafNode: boolean, isAttribute: 
  * @param source source text
  * @returns target text
  */
-export default function processTransform(xml: string, source: string) {
+export function processTransform(xml: string, source: string) {
     const parser = new XMLParser({
         ignoreAttributes: false,
         isArray,
