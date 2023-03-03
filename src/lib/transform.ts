@@ -6,10 +6,39 @@
 
 import { XMLParser } from "fast-xml-parser";
 
-/**
- * type representing the parsed XML from fast-xml-parser
- */
-type KeyboardXML = any;
+interface KeyboardTransform {
+    '@_from': string;
+    '@_to': string;
+}
+
+interface KeyboardVariable {
+    '@_id': string;
+    '@_value': string;
+}
+
+interface KeyboardVariables {
+    variable: KeyboardVariable[];
+}
+
+interface KeyboardTransformGroup {
+    transform: KeyboardTransform[];
+}
+
+interface KeyboardTransforms {
+    type: string;
+    transformGroup: KeyboardTransformGroup[];
+}
+
+interface Keyboard {
+    variables: KeyboardVariables;
+    transforms: KeyboardTransforms[];
+}
+
+interface KeyboardDocument {
+    keyboard: Keyboard;
+}
+
+
 
 /**
  * Unescape an escaped string
@@ -27,7 +56,7 @@ export function unescapeStr(str : string) : string {
  * @param vname
  * @returns
  */
-function replaceOneVar(xml : KeyboardXML, vname : string) {
+function replaceOneVar(xml : KeyboardDocument, vname : string) {
     for (const v of xml.keyboard.variables.variable) {
         const id = v['@_id'];
         if (id === vname) {
@@ -36,8 +65,8 @@ function replaceOneVar(xml : KeyboardXML, vname : string) {
             return value;
         }
     }
-    console.error(`Not found: \\\${${vname}}`);
-    return "";
+    throw new Error(`Not found: \\\${${vname}}`);
+    // return "";
 }
 
 /**
@@ -46,7 +75,7 @@ function replaceOneVar(xml : KeyboardXML, vname : string) {
  * @param str
  * @returns
  */
-function replaceVar(xml : KeyboardXML, str : string) {
+function replaceVar(xml : KeyboardDocument, str : string) {
     str = str.replace(/\\\${([0-9a-zA-Z_]+)}/g, (a : any, b : string) => replaceOneVar(xml, b));
     return str;
 
@@ -58,7 +87,7 @@ function replaceVar(xml : KeyboardXML, str : string) {
  * @param str
  * @returns
  */
-function unescapeMatch(xml : string, str : string) {
+function unescapeMatch(xml : KeyboardDocument, str : string) {
     // unescape
     str = unescapeStr(str);
     // match vars
@@ -74,7 +103,7 @@ function unescapeMatch(xml : string, str : string) {
  * @param source
  * @returns modified string
  */
-function applyMatch(xml: KeyboardXML, re: RegExp, transform: any, source: string) {
+function applyMatch(xml: KeyboardDocument, re: RegExp, transform: any, source: string) {
     const toString = unescapeMatch(xml, transform['@_to']);
     return source.replace(re, toString);
 }
@@ -85,7 +114,7 @@ function applyMatch(xml: KeyboardXML, re: RegExp, transform: any, source: string
  * @param transform
  * @returns
  */
-function getRegex(xml: KeyboardXML, transform: { [x: string]: string | RegExp; }) {
+function getRegex(xml: KeyboardDocument, transform: KeyboardTransform) {
     return new RegExp(transform['@_from'], 'g');
 }
 
@@ -96,7 +125,7 @@ function getRegex(xml: KeyboardXML, transform: { [x: string]: string | RegExp; }
  * @param source
  * @returns
  */
-function processGroup(xml: KeyboardXML, group: { transform: any; }, source: string) {
+function processGroup(xml: KeyboardDocument, group: KeyboardTransformGroup, source: string) {
     for (const transform of group.transform) {
         const re = getRegex(xml, transform);
         if (source.match(re)) {
@@ -115,7 +144,7 @@ function processGroup(xml: KeyboardXML, group: { transform: any; }, source: stri
  * @param source
  * @returns
  */
-function process(xml: { keyboard: { transforms: { transformGroup: any; }[]; }; }, source: string) {
+function process(xml: KeyboardDocument, source: string) {
     let str = source;
     for (const group of xml.keyboard.transforms[0].transformGroup) {
         str = processGroup(xml, group, str);
@@ -157,7 +186,7 @@ export function processTransform(xml: string, source: string) {
         ignoreAttributes: false,
         isArray,
     });
-    const j = parser.parse(xml);
+    const j : KeyboardDocument = parser.parse(xml);
     const target = process(j, source);
     return target;
 }
