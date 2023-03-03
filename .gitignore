@@ -31,3 +31,6 @@ coverage
 /_cktp
 /test/*.js
 /src/**/*.js
+tsconfig.node.tsbuildinfo
+vite.config.d.ts
+vite.config.js
