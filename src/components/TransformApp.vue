@@ -14,11 +14,11 @@
     <h2>
       Text Source
     </h2>
-    <input v-model="source" />
+    <input v-model="source" size="50"  />
     <h2>
       Target
     </h2>
-    <input v-model="target" />
+    <input v-model="target" size="50" />
     <hr>
     <p>
       {{ status }}
@@ -64,6 +64,8 @@ const sampleXml = `
       <variable id="consonants" value="[ABCD]"/>
       <variable id="zwnj" value="\\u{200C}" />
       <variable id="quot" value="\\u{0022}" />
+      <variable id="upper" value="[ABCDE]" /> <!-- only explicit ranges, no [a-z] -->
+      <variable id="lower" value="[abcde]" />
     </variables>
 <transforms type="simple">
     <transformGroup>
@@ -77,6 +79,9 @@ const sampleXml = `
     <transformGroup>
       <transform from="\\\${zwnj}(\\\${left_matras})(\\\${consonants})" to="$2$1"/>
     </transformGroup>
+    <transformGroup>
+      <transform from="(\\\${upper})" to="$\{1:lower}" />
+    </transformGroup>
 </transforms>
 </keyboard>
 `.trim();
@@ -85,7 +90,7 @@ export default {
   data() {
     return {
       xml: sampleXml,
-      source: 'Quack: a big happy string',
+      source: 'CAFE QUACK quack: a big happy string',
       target: '',
       status: 'Ready',
     };
@@ -97,6 +102,9 @@ export default {
     xml(newXml) {
       this.transform();
     },
+  },
+  beforeMount() {
+   this.transform(); // load it once
   },
   methods: {
     transform() {

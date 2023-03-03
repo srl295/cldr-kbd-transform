@@ -3,7 +3,7 @@
     <variables>
         <variable id="x" value="x" />>
         <variable id="y" value="y" />
-        <variable id="upper" value="[ABCDE]" />
+        <variable id="upper" value="[ABCDE]" /> <!-- only explicit ranges, no [a-z] -->
         <variable id="lower" value="[abcde]" />
     </variables>
     <transforms type="simple">
