@@ -82,7 +82,7 @@ const sampleXml = `
     <transformGroup>
       <transform from="(\\\${upper})" to="\\$\{1:lower}" />
     </transformGroup>
-</transforms>
+</transforms> <!-- Only one <transforms> is supported right now. -->
 </keyboard>
 `.trim();
 
