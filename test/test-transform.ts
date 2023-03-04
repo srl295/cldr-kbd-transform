@@ -46,10 +46,15 @@ describe('subs', (t) => {
   });
   describe('hindi', () => {
     const xml = readXml('hindi');
+    it('Should handle a simple hindi visual reordering', () => {
+      assert.equal(processTransform(xml,
+        '\u200C\u093F\u0939'), // ZWNJ + vowel II + consonant HA.  User keys: ि + ह [ZWNJ+II] [HA]
+        '\u0939\u093F');  // consonant HA + vowel II
+    });
     it('Should handle a hindi visual reordering', () => {
       assert.equal(processTransform(xml,
-        '\u200C\u093F\u0939'), // ZWNJ + vowel II + consonant HA
-        '\u0939\u093F');  // consonant HA + vowel II
+        '\u200C\u093F\u0939\u0928\u0926\u0940'), // ZWNJ + vowel II + consonant HA …
+        'हिनदी');  // Hindi
     });
   });
 });
