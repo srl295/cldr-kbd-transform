@@ -1,0 +1,14 @@
+<keyboard>
+    <variables>
+        <variable id="left_matras" value="[ि]" />>
+        <variable id="consonants" value="[कसतनमह]" />
+        <variable id="zwnj" value="\u{200C}" />
+    </variables>
+    <transforms type="simple">
+        <transformGroup>
+            <!-- drop the zwnj -->
+            <transform from="\u{200c}(\u{093f})(\u{0939})" to="$2$1" />
+            <!-- <transform from="\${zwnj}(\${left_matras})(\${consonants})" to="$2$1" /> -->
+        </transformGroup>
+    </transforms>
+</keyboard>

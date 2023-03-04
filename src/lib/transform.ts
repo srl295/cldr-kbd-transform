@@ -6,6 +6,9 @@
 
 import { XMLParser } from "fast-xml-parser";
 
+
+const DEBUG = true; // TODO logging
+
 interface KeyboardTransform {
     '@_from': string;
     '@_to': string;
@@ -46,7 +49,7 @@ interface KeyboardDocument {
  * @returns
  */
 export function unescapeStr(str : string) : string {
-    str = str.replace(/\\u{([0-9a-f]+)}/g, (a: any, b: string) => String.fromCodePoint(Number.parseInt(b, 16)));
+    str = str.replace(/\\u{([0-9a-fA-F]+)}/g, (a: any, b: string) => String.fromCodePoint(Number.parseInt(b, 16)));
     return str;
 }
 
@@ -196,6 +199,7 @@ function getRegex(xml: KeyboardDocument, transform: KeyboardTransform) {
     } else {
         // just basic escaping
         fromStr = unescapeFrom(xml, fromStr);
+        DEBUG && console.dir({ fromStr });
         // TODO: apply \m for matching
         return new RegExp(fromStr, 'g');
     }
