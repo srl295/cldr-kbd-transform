@@ -60,8 +60,8 @@ const sampleXml = `
 <!-- sample XML -->
 <keyboard>
     <variables>
-      <variable id="left_matras" value="[X]"/>
-      <variable id="consonants" value="[ABCD]"/>
+      <variable id="left_matras" value="[ि]" />>
+      <variable id="consonants" value="[कसतनमह]" />
       <variable id="zwnj" value="\\u{200C}" />
       <variable id="quot" value="\\u{0022}" />
       <variable id="upper" value="A B CC D E" /> <!-- space separated -->
@@ -77,7 +77,7 @@ const sampleXml = `
       <transform from="Q" to="\\\${quot}" />
     </transformGroup>
     <transformGroup>
-      <transform from="\\\${zwnj}(\\\${left_matras})(\\\${consonants})" to="$2$1"/>
+      <transform from="\\\${zwnj}(\\\${left_matras})(\\\${consonants})" to="$2$1" />
     </transformGroup>
     <transformGroup>
       <transform from="(\\\${upper})" to="\\$\{1:lower}" />
@@ -90,7 +90,7 @@ export default {
   data() {
     return {
       xml: sampleXml,
-      source: 'CCAFE QUACCK quack: a big happy string',
+      source: 'CCAFE QUACCK quack: \u200C\u093F\u0939\u0928\u0926\u0940, a big happy string',
       target: '',
       status: 'Ready',
     };
