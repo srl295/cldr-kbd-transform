@@ -64,8 +64,8 @@ const sampleXml = `
       <variable id="consonants" value="[ABCD]"/>
       <variable id="zwnj" value="\\u{200C}" />
       <variable id="quot" value="\\u{0022}" />
-      <variable id="upper" value="[ABCDE]" /> <!-- only explicit ranges, no [a-z] -->
-      <variable id="lower" value="[abcde]" />
+      <variable id="upper" value="A B CC D E" /> <!-- space separated -->
+      <variable id="lower" value="a b ç d e" />
     </variables>
 <transforms type="simple">
     <transformGroup>
@@ -80,7 +80,7 @@ const sampleXml = `
       <transform from="\\\${zwnj}(\\\${left_matras})(\\\${consonants})" to="$2$1"/>
     </transformGroup>
     <transformGroup>
-      <transform from="(\\\${upper})" to="$\{1:lower}" />
+      <transform from="(\\\${upper})" to="\\$\{1:lower}" />
     </transformGroup>
 </transforms>
 </keyboard>
@@ -90,7 +90,7 @@ export default {
   data() {
     return {
       xml: sampleXml,
-      source: 'CAFE QUACK quack: a big happy string',
+      source: 'CCAFE QUACCK quack: a big happy string',
       target: '',
       status: 'Ready',
     };

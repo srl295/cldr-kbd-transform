@@ -98,14 +98,16 @@ function unescapeFrom(xml: KeyboardDocument, str: string) {
     return unescapeMatch(xml, str); // TODO: special processing for from
 }
 
-const MATCH_VAR_MAP = /\${1:([^}]*)}/g;
 
-const MATCH_FROM = /\(\[([^\]]*)\]\)/;
-const MATCH_LIST = /\[([^\]]*)\]/;
+// Matches that the raw FROM is of the form: (\${var})
+const MATCH_FROM_VAR_MAP = /\(\\\${([0-9A-Za-z_]+)}\)/;
+
+// Matches that the TO side is a mapping
+const MATCH_TO_VAR_MAP = /\\\${([0-9]):([^}]*)}/; // \${#:var} => #, var
 
 /**
  * Utility function to apply a matched string
- * @param xml
+ * @param xml``
  * @param re
  * @param transform the transform entry from XML
  * @param source
@@ -116,51 +118,58 @@ function applyMatch(xml: KeyboardDocument, re: RegExp, transform: any, source: s
     // TODO marks etc
 
     const fromStr = transform['@_from']; // raw
-    const mungedFromStr = unescapeFrom(xml, fromStr); // now ([ABCD])
 
-    if (mungedFromStr.indexOf('([') === -1 // No source group in From…  // TODO: handle >1 group!
-        || !MATCH_VAR_MAP.test(toString) ) {  // If there's no ${1:…} map syntax in the TO…
+    if (!MATCH_FROM_VAR_MAP.test(fromStr) // No source group in From… // TODO: handle >1 group!
+        || !MATCH_TO_VAR_MAP.test(toString) ) {  // no ${1:…} map syntax in the TO…
         // no variable group, so do a simple sub
         return source.replace(re, toString);
     }
 
-    const fromMatch = MATCH_FROM.exec(mungedFromStr);
+    const fromList = fromAsList(fromStr, xml); // array
 
-    if(!fromMatch || !fromMatch[0]) {
-        throw Error(`Failed to parse match from ${fromStr} - expected the form ([ABCD])`);
-    }
+    //getRegex has already setup the right regex for us.
 
-    if (fromMatch.length !== 2) {
-        throw Error(`TODO: Sorry, need exactly 1, not ${fromMatch.length-1} groups.. ${fromStr}`);
-    }
-    const fromList = fromMatch[1]; // now just: ABCD
-
-    return source.replace(re, (sub, arg, offset, string) => {
-        // [[ sub=A, arg=A, toString=${1:lower}, fromStr=(\\${upper}) off=0, str=/A/ ]]'
-        if (sub.length !== 1) {
-            throw Error(`TODO: cant handle sub of ≠1 char ”${sub}”`);
-        }
-        const whereInFrom = fromList.indexOf(sub); // TODO: multi char clusters. Etc.
+    return source.replace(re, (sub, arg) => {
+        const whereInFrom = fromList.indexOf(arg); // TODO: multi char clusters. Etc.
         if (whereInFrom === -1) {
-            throw Error(`failed to find ${sub} in ${fromList} while expanding ${fromStr}`);
+            throw Error(`failed to find ${arg} in ${fromList.join(' ')} while expanding ${fromStr}`);
         }
 
-        return toString.replace(MATCH_VAR_MAP, (subsub, vname) => { // 'lower'
+        return toString.replace(MATCH_TO_VAR_MAP, (subsub, mindex, vname) => { // 'lower'
             // find the variable
-            const toMatch = fetchVarValue(xml, vname).match(MATCH_LIST); // throws if failure
-            if (!toMatch || toMatch.length !== 2) {
-                throw Error(`Could not extract list from ${vname}`);
+            if (mindex != 1) {
+                throw Error(`TODO: Only support $\{1: …} matches sorry, not ${mindex}.`);
             }
-            const toList = toMatch[1]; // [abcd] => abcd
-
-            if (fromList.length !== toList.length) {
-                throw Error(`TODO: fromList '${fromList}' and toList '${toList}' from ${vname} are different lengths`);
+            const toList = fetchVarValue(xml, vname).split(' '); // throws if failure
+            if (whereInFrom >= toList.length) {
+                throw Error(`char ${arg} off end of toList ${toList.join('|')}=${vname}`)
             }
-            return toList.charAt(whereInFrom);// A -> a
+            return toList[whereInFrom];// A -> a
         });
 
         // return `[[ ${sub}, ${arg}, ${toString}, ${fromStr} off=${offset}, str=/${string}/ ]]`
     });
+}
+
+/**
+ * given a fromStr that is a list, return the list contents
+ * @param fromStr
+ * @param xml
+ * @returns string[]
+ */
+function fromAsList(fromStr: any, xml: KeyboardDocument) {
+    const fromMatch = MATCH_FROM_VAR_MAP.exec(fromStr);
+
+    if (!fromMatch) {
+        throw Error(`Failed to parse match from ${fromStr} - expected a single (\\$\{var})`);
+    }
+
+    if (fromMatch.length !== 2) {
+        throw Error(`TODO: Sorry, need exactly 1 (\\$\{var}) form, not ${fromMatch.length - 1} groups.. ${fromStr}`);
+    }
+    const fromVar = fromMatch[1]; // from variable
+    const fromList = fetchVarValue(xml, fromVar).split(' '); // array
+    return fromList;
 }
 
 /**
@@ -172,9 +181,24 @@ function applyMatch(xml: KeyboardDocument, re: RegExp, transform: any, source: s
 function getRegex(xml: KeyboardDocument, transform: KeyboardTransform) {
     // TODO: apply exclusions for \p etc
     let fromStr = transform['@_from'];
-    fromStr = unescapeFrom(xml, fromStr);
-    // TODO: apply \m for matching
-    return new RegExp(fromStr, 'g');
+    const toStr = transform['@_to']; // to check if it's a map
+    const fromIsVar = MATCH_FROM_VAR_MAP.test(fromStr);
+    const toIsVar = MATCH_TO_VAR_MAP.test(toStr);
+
+    if (fromIsVar && toIsVar) {
+            // it's a set
+
+        const fromList = fromAsList(fromStr, xml); // array
+        const newRegexPat = fromStr.replace(MATCH_FROM_VAR_MAP,
+            `(${fromList.join('|')})`); // TODO: surely some quoting things needed here
+        const fromRegex = new RegExp(newRegexPat, 'g');
+        return fromRegex;
+    } else {
+        // just basic escaping
+        fromStr = unescapeFrom(xml, fromStr);
+        // TODO: apply \m for matching
+        return new RegExp(fromStr, 'g');
+    }
 }
 
 /**
@@ -188,7 +212,6 @@ function processGroup(xml: KeyboardDocument, group: KeyboardTransformGroup, sour
     for (const transform of group.transform) {
         const re = getRegex(xml, transform);
         if (source.match(re)) {
-            console.dir({ matched: transform });
             source = applyMatch(xml, re, transform, source);
             return source; // exit on first match
         }

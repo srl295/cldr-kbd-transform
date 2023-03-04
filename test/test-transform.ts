@@ -19,9 +19,9 @@ describe('vars', (t) => {
       assert.strictEqual(outTxt, 'a');
     });
     it('should be able to lowercase again', () => {
-      const inTxt = 'BABA';
+      const inTxt = 'BABAFF';
       const outTxt = processTransform(xml, inTxt);
-      assert.strictEqual(outTxt, 'baba');
+      assert.strictEqual(outTxt, 'babaƒ');
     });
   });
 });
