@@ -21,7 +21,7 @@
     <input v-model="target" size="50" />
     <hr>
     <p>
-      {{ status }}
+      <span style="color: red" v-if="status !== 'done'">⚠</span>{{ status }}
     </p>
 
   </div>
@@ -55,42 +55,16 @@ h3 {
 <script lang="ts">
 
 import { processTransform } from '@/lib/transform';
+import { getSampleXml, getSampleSource } from '@/lib/transform-sample';
 
-const sampleXml = `
-<!-- sample XML -->
-<keyboard>
-    <variables>
-      <variable id="left_matras" value="[ि]" />>
-      <variable id="consonants" value="[कसतनमह]" />
-      <variable id="zwnj" value="\\u{200C}" />
-      <variable id="quot" value="\\u{0022}" />
-      <variable id="upper" value="A B CC D E" /> <!-- space separated -->
-      <variable id="lower" value="a b ç d e" />
-    </variables>
-<transforms type="simple">
-    <transformGroup>
-      <transform from="a" to="b"/>
-      <transform from="c" to="d"/>
-    </transformGroup>
-    <transformGroup>
-      <transform from="q" to="\\u{0022}"/> <!-- quote -->
-      <transform from="Q" to="\\\${quot}" />
-    </transformGroup>
-    <transformGroup>
-      <transform from="\\\${zwnj}(\\\${left_matras})(\\\${consonants})" to="$2$1" />
-    </transformGroup>
-    <transformGroup>
-      <transform from="(\\\${upper})" to="\\$\{1:lower}" />
-    </transformGroup>
-</transforms> <!-- Only one <transforms> is supported right now. -->
-</keyboard>
-`.trim();
+
+const sampleXml = getSampleXml().trim();
 
 export default {
   data() {
     return {
       xml: sampleXml,
-      source: 'CCAFE QUACCK quack: \u200C\u093F\u0939\u0928\u0926\u0940, a big happy string',
+      source: getSampleSource(),
       target: '',
       status: 'Ready',
     };

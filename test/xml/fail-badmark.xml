@@ -1,0 +1,11 @@
+<!-- sample XML -->
+<keyboard>
+    <variables>
+        <variable id="x" value="x" />
+    </variables>
+    <transforms type="simple">
+        <transformGroup>
+            <transform from="≈" to="\m{0123456789012345678901234567890123456789}" /> <!-- 40 - too big -->
+        </transformGroup>
+    </transforms>
+</keyboard>

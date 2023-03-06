@@ -1,0 +1,11 @@
+<!-- sample XML -->
+<keyboard>
+    <variables>
+        <variable id="x" value="x" />
+    </variables>
+    <transforms type="simple">
+        <transformGroup>
+            <transform from="≈" to="\m{ab}" /> <!-- should be ok but TODO for this implementation -->
+        </transformGroup>
+    </transforms>
+</keyboard>

@@ -10,6 +10,9 @@
     <transforms type="simple">
         <transformGroup>
             <transform from="a" to="\m{1}\m{2}" />
+        </transformGroup>
+        <transformGroup>
+            <!-- separate group because 'a' and 'c' are simultaneous -->
             <transform from="c" to="\m{3}" />
         </transformGroup>
         <transformGroup>

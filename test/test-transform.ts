@@ -1,12 +1,20 @@
 import assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { processTransform, unescapeStr } from '../src/lib/transform.js';
+import { processTransform, unescapeStr, decodeMark } from '../src/lib/transform.js';
+import { getSampleXml, getSampleSource, getExpectedTarget } from '../src/lib/transform-sample.js';
 import { readXml } from './util.js';
 
-describe('marks', (t) => {
+describe('marks', () => {
+  describe('decodeMark()', () => {
+    it('Should be able to decode marks', () => {
+      assert.equal(decodeMark(
+        '\\m{A}'),
+        '\uF741');
+    });
+  });
   describe('marktest.xml', () => {
-    const xml = readXml('varmatch');
+    const xml = readXml('marktest');
     it('should substitute successfully', () => {
       const inTxt = 'ac';
       const outTxt = processTransform(xml, inTxt);
@@ -24,8 +32,18 @@ describe('marks', (t) => {
         '~~_~');
     });
   });
+  describe('mark failures', () => {
+    it('Should fail on mark problems', () => {
+      const inTxt = '≈';
+      assert.throws(() => processTransform(readXml('fail-badmark'), inTxt));
+    });
+    it('Should fail, for now, on TODO mark problems', () => {
+      const inTxt = '≈';
+      assert.throws(() => processTransform(readXml('fail-todomark'), inTxt));
+    });
+  });
 });
-describe('vars', (t) => {
+describe('vars', () => {
   describe('varmatch.xml', () => {
     const xml = readXml('varmatch');
     it('should substitute xd', () => {
@@ -46,7 +64,7 @@ describe('vars', (t) => {
   });
 });
 
-describe('subs', (t) => {
+describe('subs', () => {
   describe('othermatch.xml', () => {
     const xml = readXml('othermatch');
     it('should handle $#', () => {
@@ -99,5 +117,15 @@ describe('utilities', () => {
     assert.equal(unescapeStr(`\u{22}295=\u{0127}\u{22}`), `"295=ħ"`);
     assert.equal(unescapeStr(`≈`), `≈`);
     assert.equal(unescapeStr(`\\u{200C}(\\u{093f})(\\u{0939})`), `\u200c(\u093f)(\u0939)`);
+  });
+});
+
+describe('sample', () => {
+  it('Should be able to process the sample XML properly', () => {
+    const xml = getSampleXml();
+    const inTxt = getSampleSource();
+    const expectOut = getExpectedTarget();
+    const outTxt = processTransform(xml, inTxt);
+    assert.equal(outTxt, expectOut, `Expected transform of “${inTxt}”`);
   });
 });

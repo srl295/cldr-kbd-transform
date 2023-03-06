@@ -7,7 +7,9 @@
 import { XMLParser } from "fast-xml-parser";
 
 
-const DEBUG = true; // TODO logging
+const DEBUG = true; // TODO
+
+const MARK_BASE : number = 0xF700; // U+F7XX, PUA
 
 interface KeyboardTransform {
     '@_from': string;
@@ -41,15 +43,29 @@ interface KeyboardDocument {
     keyboard: Keyboard;
 }
 
-
-
 /**
  * Unescape an escaped string
  * @param str input string such as '\u017c'
  * @returns
  */
 export function unescapeStr(str : string) : string {
-    str = str.replace(/\\u{([0-9a-fA-F]+)}/g, (a: any, b: string) => String.fromCodePoint(Number.parseInt(b, 16)));
+    str = str.replace(/\\u{([0-9a-fA-F]+)}/g, (a: any, b: string) =>
+        String.fromCodePoint(Number.parseInt(b, 16)));
+    return str;
+}
+
+/**
+ * Convert "… \m{a} … " form into an escaped string
+ * @param str
+ * @returns
+ */
+export function decodeMark(str : string) : string {
+    str = str.replace(/\\m{([0-9A-Za-z_]+)}/g, (a: any, b: string) => {
+        if (b.length !== 1) { // TODO: fail if >32
+            throw Error(`TODO: this implementation only supports the form \\m{_} where _ is a single character, not \\{${b}}`)
+        }
+        return String.fromCodePoint(MARK_BASE | (b.codePointAt(0) || 0));
+    });
     return str;
 }
 
@@ -90,6 +106,8 @@ function replaceVar(xml : KeyboardDocument, str : string) {
  * @returns
  */
 function unescapeMatch(xml : KeyboardDocument, str : string) {
+    // process marks
+    str = decodeMark(str); // TODO: for final, would need more context to serialize the marks
     // unescape
     str = unescapeStr(str);
     // match vars
@@ -117,8 +135,8 @@ const MATCH_TO_VAR_MAP = /\\\${([0-9]):([^}]*)}/; // \${#:var} => #, var
  * @returns modified string
  */
 function applyMatch(xml: KeyboardDocument, re: RegExp, transform: any, source: string) {
-    const toString = unescapeMatch(xml, transform['@_to']);
-    // TODO marks etc
+    let toString  = decodeMark(transform['@_to']);
+    toString      = unescapeMatch(xml, toString);
 
     const fromStr = transform['@_from']; // raw
 
@@ -198,7 +216,7 @@ function getRegex(xml: KeyboardDocument, transform: KeyboardTransform) {
         return fromRegex;
     } else {
         // just basic escaping
-        fromStr = unescapeFrom(xml, fromStr);
+        fromStr = unescapeFrom(xml, decodeMark(fromStr));
         DEBUG && console.dir({ fromStr });
         // TODO: apply \m for matching
         return new RegExp(fromStr, 'g');
