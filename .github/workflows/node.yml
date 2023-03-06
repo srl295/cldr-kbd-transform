@@ -23,4 +23,4 @@ jobs:
           npm run test
       - name: build
         run: |
-          git clean -fdx dist src && npm run build
+          rm -rfv src/lib/*.js && npm run build
