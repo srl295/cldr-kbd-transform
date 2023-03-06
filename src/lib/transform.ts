@@ -16,6 +16,10 @@ interface KeyboardTransform {
     '@_to': string;
 }
 
+interface KeyboardTransformSettings {
+    '@_matchAll'?: boolean;
+}
+
 interface KeyboardVariable {
     '@_id': string;
     '@_value': string;
@@ -26,6 +30,7 @@ interface KeyboardVariables {
 }
 
 interface KeyboardTransformGroup {
+    transformSettings?: KeyboardTransformSettings;
     transform: KeyboardTransform[];
 }
 
@@ -231,14 +236,16 @@ function getRegex(xml: KeyboardDocument, transform: KeyboardTransform) {
  * @returns
  */
 function processGroup(xml: KeyboardDocument, group: KeyboardTransformGroup, source: string) {
+    const matchAll = group?.transformSettings?.['@_matchAll'];
     for (const transform of group.transform) {
         const re = getRegex(xml, transform);
         if (source.match(re)) {
             source = applyMatch(xml, re, transform, source);
-            return source; // exit on first match
+            if (!matchAll) {
+                return source; // exit on first match if not matchAll
+            }
         }
     }
-    // console.log('nomatch in this group');
     return source;
 }
 

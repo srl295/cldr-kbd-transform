@@ -5,6 +5,16 @@ import { processTransform, unescapeStr, decodeMark } from '../src/lib/transform.
 import { getSampleXml, getSampleSource, getExpectedTarget } from '../src/lib/transform-sample.js';
 import { readXml } from './util.js';
 
+
+describe('french', () => {
+  const xml = readXml('fr-sample');
+  it('Should handle matchAll=true', () => {
+    assert.equal(processTransform(xml,
+      'r`esum`e espa~nol'),
+      'rèsumè español');
+  });
+});
+
 describe('marks', () => {
   describe('decodeMark()', () => {
     it('Should be able to decode marks', () => {
