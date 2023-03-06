@@ -1,7 +1,7 @@
 <!-- sample XML -->
 <keyboard>
     <variables>
-        <variable id="x" value="x" />>
+        <variable id="x" value="x" />
         <variable id="y" value="y" />
         <variable id="upper" value="A B C D E FF" />
         <variable id="lower" value="a b c d e ƒ" />

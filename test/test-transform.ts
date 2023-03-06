@@ -4,6 +4,27 @@ import { describe, it } from 'node:test';
 import { processTransform, unescapeStr } from '../src/lib/transform.js';
 import { readXml } from './util.js';
 
+describe('marks', (t) => {
+  describe('marktest.xml', () => {
+    const xml = readXml('varmatch');
+    it('should substitute successfully', () => {
+      const inTxt = 'ac';
+      const outTxt = processTransform(xml, inTxt);
+      assert.strictEqual(outTxt, '~C'); // C
+    });
+    it('should handle partial', () => {
+      assert.equal(processTransform(xml,
+        '_a'),
+        '_~~');
+      assert.equal(processTransform(xml,
+        'c'),
+        '~');
+      assert.equal(processTransform(xml,
+        'a_c'),
+        '~~_~');
+    });
+  });
+});
 describe('vars', (t) => {
   describe('varmatch.xml', () => {
     const xml = readXml('varmatch');

@@ -1,0 +1,25 @@
+<!-- sample XML -->
+<keyboard>
+    <variables>
+        <variable id="x" value="x" />
+    </variables>
+    <!--
+        In this implementation, it only supports \m{_} where _ is a single character  [0-9A-Za-z_]
+        which gets transformed to U+F7__  ( 0xF700 | _ )
+    -->
+    <transforms type="simple">
+        <transformGroup>
+            <transform from="a" to="\m{1}\m{2}" />
+            <transform from="c" to="\m{3}" />
+        </transformGroup>
+        <transformGroup>
+            <!-- mark2 + mark3 = C -->
+            <transform from="\m{2}\m{3}" to="C" />
+        </transformGroup>
+        <transformGroup>
+            <!-- drop any remaining marks.
+                 …Or, turn them into tildes for debugging-->
+            <transform from="(\m{1}|\m{2}|\m{3})" to="~" />
+        </transformGroup>
+    </transforms>
+</keyboard>
