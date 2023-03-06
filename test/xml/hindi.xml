@@ -1,6 +1,14 @@
-<keyboard>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE keyboard SYSTEM "https://raw.githubusercontent.com/srl295/cldr/cldr-15034/kbd-transform/keyboards/dtd/ldmlKeyboard.dtd">
+<keyboard locale="und" conformsTo="techpreview">
+	<locales>
+		<locale id="und" />
+	</locales>
+    <names>
+        <name value="Transform Sample"/>
+    </names>
     <variables>
-        <variable id="left_matras" value="[ि]" />>
+        <variable id="left_matras" value="[ि]" />
         <variable id="consonants" value="[कसतनमह]" />
         <variable id="zwnj" value="\u{200C}" />
     </variables>

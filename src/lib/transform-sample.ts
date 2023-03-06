@@ -5,16 +5,23 @@
  */
 export function getSampleXml() {
     return `
-    <!-- sample XML -->
-    <keyboard>
-        <variables>
-          <variable id="left_matras" value="[ि]" />>
-          <variable id="consonants" value="[कसतनमह]" />
-          <variable id="zwnj" value="\\u{200C}" />
-          <variable id="quot" value="\\u{0022}" />
-          <variable id="upper" value="A B CC D E" /> <!-- space separated -->
-          <variable id="lower" value="a b ç d e" />
-        </variables>
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE keyboard SYSTEM "https://raw.githubusercontent.com/srl295/cldr/cldr-15034/kbd-transform/keyboards/dtd/ldmlKeyboard.dtd">
+<keyboard locale="und" conformsTo="techpreview">
+    <locales>
+        <locale id="und" />
+    </locales>
+    <names>
+        <name value="Transform Sample"/>
+    </names>
+    <variables>
+        <variable id="left_matras" value="[ि]" />>
+        <variable id="consonants" value="[कसतनमह]" />
+        <variable id="zwnj" value="\\u{200C}" />
+        <variable id="quot" value="\\u{0022}" />
+        <variable id="upper" value="A B CC D E" /> <!-- space separated -->
+        <variable id="lower" value="a b ç d e" />
+    </variables>
     <transforms type="simple">
         <transformGroup>
           <transform from="a" to="b"/>
@@ -38,8 +45,8 @@ export function getSampleXml() {
           <transform from="(\\\${upper})" to="\\$\{1:lower}" />
         </transformGroup>
     </transforms> <!-- Only one <transforms> is supported right now. -->
-    </keyboard>
-    `;
+</keyboard>
+    `.trim();
 }
 
 /**
