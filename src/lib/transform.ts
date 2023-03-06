@@ -258,6 +258,10 @@ function processGroup(xml: KeyboardDocument, group: KeyboardTransformGroup, sour
 function process(xml: KeyboardDocument, source: string) {
     let str = source;
     // TODO: only processes 0th transform
+    if (xml.keyboard.transforms.length !== 1) {
+        throw Error(`TODO: This implementation only supports a single <transforms> element.`);
+    }
+
     for (const group of xml.keyboard.transforms[0].transformGroup) {
         str = processGroup(xml, group, str);
     }
